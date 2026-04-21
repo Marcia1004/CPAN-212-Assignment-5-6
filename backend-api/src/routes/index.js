@@ -9,9 +9,11 @@ import reductionRoutes from "./reductionRoutes.js";
 import claimRoutes from "./claimRoutes.js";
 import dashboardRoutes from "./dashboardRoutes.js";
 import keycloakRoutes from "./keycloackRoutes.js";
-
+import healthRoutes from "./healthRoutes.js";
 
 const router = Router();
+
+router.use("/", healthRoutes);
 
 router.use("/auth", authRoutes);
 router.use("/profile", profileRoutes);
