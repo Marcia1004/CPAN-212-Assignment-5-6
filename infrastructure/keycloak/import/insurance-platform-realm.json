@@ -1,0 +1,165 @@
+{
+  "realm": "insurance-platform",
+  "enabled": true,
+  "displayName": "Insurance Platform",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+
+  "roles": {
+    "realm": [
+      { "name": "ADMIN" },
+      { "name": "AGENT" },
+      { "name": "UNDERWRITER" },
+      { "name": "CLAIMS_ADJUSTER" },
+      { "name": "CUSTOMER" }
+    ]
+  },
+
+  "clientScopes": [
+    {
+      "name": "backend-audience-scope",
+      "description": "Adds backend-api as audience to access tokens",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience-backend-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "backend-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+
+  "clients": [
+    {
+      "clientId": "backend-api",
+      "name": "backend-api",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": true,
+      "redirectUris": [
+        "http://localhost/api/auth/keycloak/callback"
+      ],
+      "webOrigins": [
+        "http://localhost"
+      ],
+      "defaultClientScopes": [
+        "profile",
+        "email",
+        "roles",
+        "backend-audience-scope"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "attributes": {
+        "access.token.lifespan": "3600"
+      },
+      "secret": "9f3c7d1a8e4b2c6f5a0d7e9b1c4f8a2d6e3c1b7f9a5d2e8c4b6f0a1d3e7b9c2"
+    }
+  ],
+
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@insurance.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Password123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ADMIN"]
+    },
+    {
+      "username": "agent1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Agent",
+      "lastName": "One",
+      "email": "agent1@insurance.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Password123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["AGENT"]
+    },
+    {
+      "username": "underwriter1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Underwriter",
+      "lastName": "One",
+      "email": "underwriter1@insurance.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Password123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["UNDERWRITER"]
+    },
+    {
+      "username": "adjuster1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Adjuster",
+      "lastName": "One",
+      "email": "adjuster1@insurance.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Password123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["CLAIMS_ADJUSTER"]
+    },
+    {
+      "username": "customer1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Customer",
+      "lastName": "One",
+      "email": "customer1@insurance.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Password123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["CUSTOMER"]
+    }
+  ]
+}

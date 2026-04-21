@@ -1,0 +1,146 @@
+services:
+  nginx:
+    build:
+      context: ./infrastructure/nginx
+      dockerfile: Dockerfile
+    container_name: insurance-nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend-web
+      - backend-api
+      - keycloak
+    networks:
+      - insurance-net
+
+  frontend-web:
+    build:
+      context: ./frontend-web
+      dockerfile: Dockerfile
+    container_name: insurance-frontend
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      NEXT_PUBLIC_API_BASE_URL: http://localhost/api
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./frontend-web:/app
+      - frontend_node_modules:/app/node_modules
+    expose:
+      - "3000"
+    depends_on:
+      - backend-api
+    networks:
+      - insurance-net
+
+  backend-api:
+    build:
+      context: ./backend-api
+      dockerfile: Dockerfile
+    container_name: insurance-backend
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      MONGODB_URI: mongodb://insurance-mongodb:27017/insurance
+      JWT_SECRET: replace_with_strong_secret
+      JWT_EXPIRES_IN: 2h
+      FRONTEND_URL: http://localhost
+
+      HTTPS_PFX_PATH: ./cert/server.pfx
+      HTTPS_PFX_PASSPHRASE: test123
+      KEYCLOAK_BASE_URL: http://nginx/keycloak
+      KEYCLOAK_PUBLIC_BASE_URL: http://localhost/keycloak
+      KEYCLOAK_REALM: insurance-platform
+      KEYCLOAK_CLIENT_ID: backend-api
+      KEYCLOAK_CLIENT_SECRET: 9f3c7d1a8e4b2c6f5a0d7e9b1c4f8a2d6e3c1b7f9a5d2e8c4b6f0a1d3e7b9c2
+      KEYCLOAK_BACKEND_CALLBACK_URL: http://localhost/api/auth/keycloak/callback
+      KEYCLOAK_FRONTEND_SUCCESS_REDIRECT_URL: http://localhost/auth/keycloak/success
+      KEYCLOAK_FRONTEND_FAILURE_REDIRECT_URL: http://localhost/login
+
+      GENAI_API_BASE_URL: http://genai-api:11434
+      OLLAMA_MODEL: mistral
+    volumes:
+      - ./backend-api:/app
+      - backend_node_modules:/app/node_modules
+    expose:
+      - "5000"
+    depends_on:
+      - mongodb
+      - keycloak
+      - genai-api
+    networks:
+      - insurance-net
+
+  mongodb:
+    image: mongo:7.0
+    container_name: insurance-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: insurance_platform
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - insurance-net
+
+  keycloak:
+    build:
+      context: ./infrastructure/keycloak
+      dockerfile: Dockerfile
+    container_name: insurance-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME: localhost
+      KC_HTTP_RELATIVE_PATH: /keycloak
+    volumes:
+      - ./infrastructure/keycloak/import:/opt/keycloak/data/import
+    expose:
+      - "8080"
+    networks:
+      - insurance-net
+
+  genai-api:
+    build:
+      context: ./infrastructure/genai-api
+      dockerfile: Dockerfile
+    container_name: insurance-ollama
+    environment:
+      OLLAMA_MODEL: mistral
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - insurance-net
+
+  jenkins:
+    build:
+      context: ./infrastructure/jenkins
+      dockerfile: Dockerfile
+    container_name: insurance-jenkins
+    ports:
+      - "8081:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - insurance-net
+
+volumes:
+  mongodb_data:
+  ollama_data:
+  jenkins_home:
+  frontend_node_modules:
+  backend_node_modules:
+
+networks:
+  insurance-net:
+    driver: bridge
