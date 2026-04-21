@@ -1,4 +1,4 @@
-## NorthStar Insurance Platform — CPAN 212 Assignment 5–6
+### NorthStar Insurance Platform — CPAN 212 Assignment 5–6
 
 A full-stack insurance operations platform running on a multi-service Docker architecture with:
 
@@ -16,11 +16,11 @@ Ollama GenAI service
 
 Jenkins CI/CD
 
-# How to Run the Project
+### How to Run the Project
 
 docker compose up -d
 
-# All services start automatically:
+### All services start automatically:
 
 Frontend → http://localhost
 
@@ -30,7 +30,7 @@ Keycloak → http://localhost:8080/keycloak
 
 MongoDB → localhost:27017
 
-# Architecture Overview
+### Architecture Overview
 
 nginx → routes traffic to frontend, backend, keycloak
 frontend-web → Next.js 15
@@ -40,7 +40,7 @@ mongodb → data persistence
 genai-api → Ollama (mistral)
 jenkins → CI/CD
 
-# Project Structure
+### Project Structure
 
 /frontend-web
 /backend-api
