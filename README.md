@@ -1,4 +1,4 @@
-# NorthStar Insurance Platform — CPAN 212 Assignment 5–6
+## NorthStar Insurance Platform — CPAN 212 Assignment 5–6
 
 A full-stack insurance operations platform running on a multi-service Docker architecture with:
 
